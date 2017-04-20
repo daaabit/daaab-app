@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="it" ng-app="app">
+  <head>
+  <script src="components/loader.js"></script>
+  <link rel="stylesheet" href="components/loader.css">
+
+    <meta charset="utf-8" />
+    <!-- INIZIO FAVICON -->
+    <link rel="apple-touch-icon" sizes="57x57"          href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="60x60"          href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="72x72"          href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="76x76"          href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="114x114"        href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="120x120"        href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="144x144"        href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="152x152"        href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180"        href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="192x192"   href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32"     href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96"     href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16"     href="/favicon.ico">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/favicon.ico">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-startup-image"         href="/favicon.ico">
+    <!-- FINE FAVICON -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- hide url bar on mobile devices -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <title>daAaB Quick Ticket</title>
+    
+    <!-- css -->
+    <!-- link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" -->
+    <link rel="stylesheet" media="all" href="css/daaab.css" />
+    
+    <!-- scripts -->
+    <script type="text/javascript">
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.src = "js/daaab.js";
+  document.getElementsByTagName("head")[0].appendChild(script);
+  
+  try {
+    var gmaps = document.createElement("script");
+    gmaps.type = "text/javascript";
+    gmaps.src = "https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBo03-1oZ9hOXS1wRn7I7E3mo-Zioxb2I8&language=it&callback=onMapComplete";
+    document.getElementsByTagName("head")[0].appendChild(gmaps);
+  }
+  catch(err) {
+    alert("Cannot load google map library, please check network");
+  }
+  
+  // CHECK FIRST LAUNCH
+  setTimeout(function(){
+    // PER TEST: window.localStorage.removeItem('launchCount')
+    var applaunchCount = window.localStorage.getItem('launchCount');
+    //Check if it already exists or not
+    if (applaunchCount) {
+      //This is a second time launch, and count = applaunchCount
+      window.localStorage.setItem('launchCount', parseInt(applaunchCount) + 1);
+    } else {
+      //Local storage is not set, hence first time launch. set the local storage item
+      window.localStorage.setItem('launchCount', 1);
+      setTimeout(function(){ document.location = 'help.html' }, 250);
+    }
+    
+    // https://quickleft.com/blog/cookies-with-my-cors/
+    // http://blog.carbonfive.com/2012/02/27/supporting-cross-domain-ajax-in-rails-using-jsonp-and-cors/
+    // https://gist.github.com/AdrianTeh/3561310
+    // http://justbuildsomething.com/cordova-and-express-session/
+    $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+      options.crossDomain = true;
+      options.xhrFields = { withCredentials: true };
+    });
+    
+    // BACO COOKIE LAW
+    // setTimeout(function(){ $('.lean-overlay').remove(); }, 1250);
+  }, 350);
+</script>
+
+    
+    <script type="text/javascript" src="https://checkout.stripe.com/checkout.js"></script>
+    
+    
+  </head>
+  <body
+    data-controller="daaab"
+    data-action="result"
+    data-controller_action="daaab/result"
+    class="loaded"
+    ng-controller="DaaabCtrl as dc">
+    <style type="text/css" media="screen">
+  body, html {
+    font: 'Montserrat';
+  }
+  
+  .spinner {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+
+    margin: 0px;
+    text-align: center;
+    font-size: 10px;
+
+    background-color: #1565C0;
+    opacity: 1;
+    z-index: 2001;
+  }
+  
+  .spinner > div {
+    /* background-color: #333; */
+    background-color: rgba(250,250,250,0.65);
+    height: 20px;
+    width: 300px;
+    display: block;
+    /* SENZA SPAN margin-bottom: 10px; */
+    margin-bottom: -10px;
+
+    -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+    animation: sk-stretchdelay 1.2s infinite ease-in-out;
+  }
+  
+  .spinner .rect1 {
+    margin-left: calc(50% - 210px);
+  }
+
+  .spinner .rect2 {
+    margin-left: calc(50% - 170px);
+    -webkit-animation-delay: -1.1s;
+    animation-delay: -1.1s;
+  }
+  
+  .spinner .rect3 {
+    margin-left: calc(50% - 130px);
+    -webkit-animation-delay: -1.0s;
+    animation-delay: -1.0s;
+  }
+  
+  .spinner .rect4 {
+    margin-left: calc(50% - 90px);
+    -webkit-animation-delay: -0.9s;
+    animation-delay: -0.9s;
+  }
+
+  .spinner span {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #1565C0;
+    position: relative;
+    display: inline-block;
+    top: -8px;
+  }
+  .spinner .rspan1 {
+    margin-right: 0.85em;
+  }
+  .spinner .rspan1,
+  .spinner .rspan3 {
+    font-weight: normal;
+    color: gray;
+    opacity: 1;
+  }
+  .spinner .rspan2,
+  .spinner .rspan4 {
+    font-weight: bold;
+  }
+        
+  @-webkit-keyframes sk-stretchdelay {
+    0%, 40%, 100% { -webkit-transform: scaleX(0.5) }  
+    20% { -webkit-transform: scaleX(1.0) }
+  }
+  
+  @keyframes sk-stretchdelay {
+    0%, 40%, 100% { 
+      transform: scaleX(0.5);
+      -webkit-transform: scaleX(0.5);
+    }  20% { 
+      transform: scaleX(1.0);
+      -webkit-transform: scaleX(1.0);
+    }
+  }
+  .spinner > div.spacer {
+    animation: none;
+    height: 33%;
+    background-color: transparent;
+    display: block;
+  }
+  .spinner > div.please-wait {
+    animation: none;
+
+    background-color: transparent;
+    height: 20px;
+    width: 300px;
+    display: block;
+    margin-bottom: 10px;
+
+    text-align: center;
+    margin-top: 1em;
+    width: 100%;
+    /* color: #333; */
+    color: rgba(250,250,250,0.65);
+    font-size: 2em;
+  }
+</style>
+<div class="spinner" id="appSpinner" style="display: block;">
+    <div class="spacer"></div>
+    <div class="rect1"></div><span class="rspan1">da</span>
+    <div class="rect2"></div><span class="rspan2">A</span>
+    <div class="rect3"></div><span class="rspan3">a</span>
+    <div class="rect4"></div><span class="rspan4">B</span>
+    <div class="please-wait">Loading...</div>
+  </div>
+    
+    
+    <div class="main page-container" data-navbar="visible">
+      <!-- Menu laterale -->
+<nav id="main_nav"
+  class="light-blue lighten-1 main_nav"
+  role="navigation"  style=" ">
+  <ul id="nav-mobile" class="side-nav fixed">
+    <!-- Spazio user -->
+    <li>
+      <div class="userView"
+  data-user_checked='false'
+  data-user='{"err":"Not Logged"}'>
+    <!-- utente loggato -->
+    <!-- a href="#!user"><div class="circle"><span class="user_letter">J</span></div></a>
+    <a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a -->
+    <!-- a href="#!user"><div class="circle">
+      <i class="material-icons user_letter"
+        style="font-size: 3em; margin-top: 0.1em;">account_circle</i>
+    </div></a>
+    <a href="#!email"><span class="white-text email">Click here to login</span></a -->
+  
+  <span id="user_loading">
+    <div class="progress">
+      <div class="indeterminate"></div>
+    </div>
+    <span class="white-text email">Controllando l&#39;utente... </span>
+  </span>
+  
+  <span id="user_logged" style="display: none;">
+    <a href="#!user">
+      <div class="circle"><span class="user_letter">X</span></div>
+      <span class="white-text credit"
+        style="float: right; top: -4em; position: relative;"
+        >--</span>
+    </a>
+    <a href="#!email"><span class="white-text email"><span class="__cf_email__" data-cfemail="631b1b231a1a4d1919">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></span></a>
+  </span>
+  
+  <span id="user_notlogged" style="display: none;">
+    <a href="#!user"><div class="circle">
+      <i class="material-icons user_letter"
+        style="font-size: 3em; margin-top: 0.1em;">account_circle</i>
+    </div></a>
+    <a href="#!email"><span class="white-text email">Clicca qui per accedere </span></a>
+  </span>
+</div>
+
+    </li>
+
+    <!-- Menu principale -->
+    <li style="clear: both;">
+      <a class="active" href="index.html">
+        <i class="material-icons">timeline</i>Percorso da A a B
+</a>    </li>
+    <li style="clear: both;">
+      <a class="" href="ticket.html">
+        <i class="material-icons">confirmation_number</i>Acquisto
+</a>    </li>
+    <li style="clear: both;">
+      <a class="" href="wallet.html">
+        <i class="material-icons">account_balance_wallet</i>Portafoglio
+</a>    </li>
+    <li style="clear: both;">
+      <a class="" href="help.html">
+        <i class="material-icons">help_outline</i>Come funziona
+</a>    </li>
+    <li style="clear: both;">
+      <a onclick="navigator.app.loadUrl('https://www.daaab.it', { openExternal:true });">
+        <i class="material-icons">info_outline</i>Più informazioni
+</a>    </li>
+    <li style="clear: both;">
+      <a id="getFeeedback" href="#">
+        <i class="material-icons">sms_failed</i>Scrivici
+</a>    </li>
+    <!-- li style="clear: both;">
+        <i class="material-icons">cast</i>
+    </li -->
+    
+    <li><div class="divider"></div></li>
+    
+    <!-- Menu lingua -->
+      
+      
+  </ul>
+  <div class="nav-wrapper xvalign-wrapper">
+  <div class="row xvalign">
+      <div class="">
+        <a 
+          id="nav_btn"
+          style="height: 40px;"
+          data-activates="nav-mobile"
+          class="button-collapse">
+          <i class="material-icons">menu</i>
+        </a>
+         <!-- From-To-header -->
+        <div class="from_to_wrapper"> 
+          <div class="from_to_header">
+            <div class="header_stop from_stop">
+              <a zhref="index.html">
+                <i class="material-icons left header_icon">near_me</i>
+                <span></span>
+              </a>
+            </div>
+            <!--div class="divider"></div-->
+            <div class="header_stop to_stop">
+              <a zhref="index.html">
+                <i class="material-icons left header_icon">place</i>
+                <span></span>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="inv_share_btn" style="display: none">
+          <div class="fixed-action-btn horizontal">
+            <a id="share_btn" class="btn-floating btn-medium">
+              <i class="material-icons" 
+              style="color:blue;line-height: 38px;height: 38px;">share</i>
+            </a>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div id="modal_login"
+  class="modal bottom-sheet"
+  data-stripe_key="pk_live_nNL2BjQOUMDsZF5CVOjBsgcc"
+  data-not_found="Utente non trovato"
+  data-strip_name="daAaB.it"
+  data-strip_description="Login al tuo Account"
+  data-strip_panel_label="Login (nulla da pagare!)"
+  >
+  <div class="modal-content">
+    <h4>Accedi con</h4>
+    <a class="waves-effect waves-light btn fecebook" href="#">Facebook</a>
+    
+    <a class="waves-effect waves-light btn paypal"   href="#">PayPal</a>
+    <a class="waves-effect waves-light btn stripe"   href="#">Stripe</a>
+  </div>
+</div>
+
+<!-- impostare display: block; per visualizzarla -->
+<div id="shareOptions" class="modal bottom-sheet my-include zmodal-fixed-footer" style="border: 5px solid #3288e6;">
+  <div class="modal-content option_content" style="background-color: white;">  
+    <!-- bottoni principali -->
+    <ul class="shareOptionlist">
+      <li class="share-item" data-type="trip"                       >{{ 'SHARE_TRIP' | translate }}</li>
+      <li class="share-item" data-type="path"                       >{{ 'SHARE_PATH' | translate }}</li>
+      <li class="share-item" data-type="come" style="display: none;">{{ 'SHARE_COME' | translate }}</li>
+    </ul>
+    
+    <div class="progress_title" style="display: none;">
+      <span class="card-title">{{ 'SHARE_LOAD' | translate }}</span>
+    </div>
+    <div class="progress" style="display: none;">
+      <div class="indeterminate"></div>
+    </div>
+    
+    <!-- share message -->
+    <textarea readonly name="share-msg"
+      style="color: blue; border: 1px solid blue; margin-bottom: 0px; height: 5em;"></textarea>
+    
+    <!-- Da nascondere prima delle altre operazioni -->
+    <ul class="sharelist">
+      <li data-type="wa">
+        <a id="whatsapp" class="btn-floating green" style="text-align: center;">
+          <img style="width: 24px; height: 24px; margin-top: 5px" src="assets/wp.png" alt="Wp e5a07f17da2a269fa6d0d2a2a2892e94c75336a219183e15846503e258b085dc" />
+        </a>
+        <span> {{'SHARE_LNK_WA' | translate }}</span> 
+      </li>
+      <li data-type="sms">
+        <a id="sms" class="btn-floating yellow">
+          <i class="material-icons" style="line-height: 38px;height: 38px;">sms</i>
+        </a>
+        <span> {{'SHARE_LNK_SMS' | translate }}</span> 
+      </li>
+      <li data-type="email">
+        <a id="byemail" class="btn-floating red">
+          <i class="material-icons" style="line-height: 38px;height: 38px;">email</i>
+        </a>
+        <span> {{'SHARE_LNK_EMAIL' | translate }}</span> 
+      </li>
+    </ul>
+  </div>
+  
+  <!-- div class="modal-footer"> 
+    <a id="closeShareModal" class="modal-action modal-close btn blue darken-3">Close</a> 
+  </div -->
+</div>
+
+
+      <!-- Pagina -->
+      <div class="section no-pad-bot main-content" id="index-banner">
+        <div id="daaab_dialogs" class="my-include inclueded">
+  <!-- impostare display: block; per visualizzarla -->
+ <div id="sortOptions" class="modal my-include modal-fixed-footer" style="border: 5px solid #3288e6;">
+   <div class="modal-content option_content" style="background-color: white;">  
+ 	<div> 
+ 		<div class="sort_title">{{ 'OPT_TRAVEL_TITLE' | translate }}</div> 
+ 		<div class="sort_item">
+      <p>
+        <input type="radio" name="gr" id="opt_t1" value="br" ng-model="dc.options.route" />
+        <label for="opt_t1">{{ 'OPT_TRAVEL_ROUTE' | translate }}</label>
+      </p>
+      <p>
+        <input type="radio" name="gr" id="opt_t2" value="ft" ng-model="dc.options.route" />
+        <label for="opt_t2">{{ 'OPT_TRAVEL_TRANS' | translate }}</label>
+      </p>
+      <p>
+        <input type="radio" name="gr" id="opt_t3" value="lw" ng-model="dc.options.route" />
+        <label for="opt_t3">{{ 'OPT_TRAVEL_WALK' | translate }}</label>
+      </p>
+    </div>
+ 	</div>
+  
+  <div> 
+    <div class="sort_title">{{ 'OPT_SORT_TITLE' | translate }}</div> 
+    <div class="sort_item">
+      <p>
+        <input type="radio" name="gs" id="opt_s1" value="arrival_time" ng-model="dc.options.sort" />
+        <label for="opt_s1">{{ 'OPT_SORT_ARR' | translate }}</label>
+      </p>
+      <p>
+        <input type="radio" name="gs" id="opt_s2" value="departure_time" ng-model="dc.options.sort" />
+        <label for="opt_s2">{{ 'OPT_SORT_DEP' | translate }}</label>
+      </p>
+    </div>
+  </div>
+  
+  <div>
+    <div class="sort_title">{{ 'OPT_EXTRAT_T' | translate:{ time: dc.options.extrat } }}</div> 
+    <div class="sort_item"> 
+      <div id="" class="sort_item"> 
+        <p class="range-field">
+          <input type="range" id="" min="0" max="300" ng-model="dc.options.extrat" />
+        </p>
+      </div> 
+    </div>
+  </div>
+  
+ 		<!--div class="sort_title ng-binding">{{ 'OPT_ALL_TITLE' | translate }}</div> 
+ 		<div class="sort_item"> 
+ 			<span class="ng-binding">{{ 'OPT_ALL_VIB' | translate }}</span> 
+ 			<span class="switch" style="position: absolute; right: 0px; padding-right: 10px;"> 
+ 			<label> 
+ 				<span class="ng-binding">{{ 'OPT_NO' | translate }}</span> 
+ 				<input ng-model="dc.daaab.vibrate" ng-change="dc.daaab.saveData()" class="ng-pristine ng-untouched ng-valid ng-not-empty" type="checkbox"> 
+ 				<span class="lever"></span> 
+ 				<span  style="margin-left: -8px;" class="ng-binding">{{ 'OPT_YES' | translate }}</span> 
+ 			</label> 
+ 			</span> 
+ 		</div> 
+ 		<div class="sort_item"> 
+ 			<span class="ng-binding">{{ 'OPT_ALL_POP' | translate }}</span> 
+ 			<span class="switch" style="position: absolute; right: 0px; padding-right: 10px;"> 
+	 			<label> 
+	 				<span class="ng-binding">{{ 'OPT_NO' | translate }}</span> 
+	 				<input ng-model="dc.daaab.alert" ng-change="dc.daaab.saveData()" class="ng-pristine ng-untouched ng-valid ng-empty" type="checkbox"> 
+	 				<span class="lever"></span> 
+	 				<span  style="margin-left: -8px;" class="ng-binding">{{ 'OPT_YES' | translate }}</span> 
+	 			</label> 
+ 			</span> 
+ 		</div --> 
+</div> 
+<div class="modal-footer"> 
+	<a class="modal-action btn blue darken-3"
+    style="margin-left: 1em;"
+    ng-click="dc.routeOptionsApply()"
+    >{{ 'OPT_APPLY' | translate }}</a> 
+	<a class="modal-action modal-close btn blue darken-3 ng-binding"
+    >{{ 'OPT_CANCEL' | translate }}</a> 
+</div>
+ </div>
+
+</div>
+<!-- div
+  style="position: absolute; top: 0px; left: 40px; z-index: 3000;"
+  id="fromField">{{from_descr}}</div 
+<div id="input-box" style="display: none;">
+<input
+  style="position: absolute; top: 0px; left: 40px; z-index: 3000;"
+  type="text" disabled ng-model="dc.from_descr" id="fromField" />
+<input
+  style="position: absolute; top: 25px; left: 40px; z-index: 3000;"
+  type="text" disabled ng-model="dc.to_descr"   id="toField"   />
+  </div>-->
+<div class="row" id="daaabMain">
+
+  <div id="daaabTimeline" class="daaab_timeline col s12 my-include inclueded" style="height: 80px;">
+    <route-timeline route="dc.selectedRoute" rescale="false" businline="false"></route-timeline>
+<div id="now-marker-bar"      style="display: block; margin-top: 2px;"></div>
+<div id="now-marker-triangle" style="display: block"></div>
+<div id="travel-message">
+  <span id="tlh-leg-icon"><i class="material-icons">{{dc.currentLeg.icon}}</i></span>
+  <span id="tlh-message-text">&nbsp;</span>
+</div>
+  </div>
+  
+  <div id="daaabRoutes" class="daaab_tab col s12">
+    <div id="routesHeader" style="background-color: white" class="row">
+  <div class="col">
+  <div style="position: relative;">
+    <input type="text" id="date" disabled="disabled">
+    <div id="date_input_div"
+      style="position: absolute; left: 0; right: 44px; top: 0; bottom: 0;"
+      zng-click="dc.calculateNow()"></div>
+    <a id="date_btn"
+      class="waves-effect waves-light btn blue darken-3"
+      zng-click="dc.calculateByDateClick()">
+      <i class="material-icons">today</i>
+    </a>
+  </div>
+  
+  <div style="position: relative;">
+    <input type="text" id="time" disabled="disabled" ng-click="ctl.calculateNow()">
+    <div
+      style="position: absolute; left: 0; right: 44px; top: 0; bottom: 0;"
+      ng-click="dc.calculateNow()"></div>
+    <a id="time_btn"
+      class="waves-effect waves-light btn blue darken-3"
+      ng-click="dc.calculateByHourClick()">
+      <i class="material-icons">schedule</i>
+    </a>
+  </div>
+  
+  <div>
+    <a class="waves-effect waves-light btn blue darken-3" ng-click="dc.calculateRoutePrev()">
+      <i class="material-icons">navigate_before</i>
+    </a>
+    <a class="waves-effect waves-light btn blue darken-3" ng-click="dc.calculateRouteNext()">
+      <i class="material-icons">navigate_next</i>
+    </a>
+    <a class="waves-effect waves-light btn blue darken-3 zdisabled" ng-click="dc.routeOptions()">
+      <i class="material-icons">sort</i>
+    </a>
+  </div>
+</div>
+
+</div>
+<!-- RESTO DEL MONDO 
+ <div ng-if="dc.routes.length == 0 || dc.error_message" style="background-color: white; padding-top: 50px;">
+    <div ng-if="dc.error_message"
+      class="route_error_msg"
+      ng-bind-html="dc.error_message | to_trusted">
+    </div>
+    <div>
+      <div id="cl_message"
+        class="blue-text text-darken-3"
+        style="text-align: center; margin-top: 1em; font-size: 1.5em;"
+        >...</div>
+      <div style="text-align: center;
+        font-size: 1.5em;
+        margin-bottom: 1em;
+        margin-top: 1em;">
+        ...
+      </div>
+      <div style="text-align: center;">
+        <a class="waves-effect waves-light btn blue darken-3"
+          style="width: 80%"
+          zng-click="dc.calculateRoute()">
+          Ricalcola
+        </a>
+      </div>
+    </div>
+  </div> -->
+<div ng-if="dc.routes.length > 0" class="route-card-container" style="">
+    <route-card
+      ng-repeat="route in dc.routes"
+      ng-click="dc.chooseRoute($index)"
+      route="route"
+      active="(route.selected ? true : false)"
+      >
+    </route-card>
+</div>
+  </div>
+  <div id="daaabSteps"  class="col s12 my-include inclueded">
+    <div class="steps-container list">
+  <div ng-if="dc.selectedRoute.price"
+    ng-click="dc.ticketPreview(dc.selectedRoute.price.ticket_url, dc.selectedRoute.price.incomplete)"
+    ng-class="dc.selectedRoute.price.incomplete ? 'route_ticket_incomplete' : ''"
+    class="route_ticket">
+    <span class="trip-cost-value">€ {{(dc.selectedRoute.price.price / 100).toFixed(2)}}</span>
+  </div>
+  
+  <!-- http://stackoverflow.com/questions/36929965/creating-css-circles-connected-with-lines-vertical-and-horizontal -->
+  <ul>
+    <li class="item start-step {{ dc.selectedRoute.started ? 'passed' : '' }}">
+      <span class="step_at">{{ dc.selectedRoute.dep_time }}</span>
+      <!-- span class="step_icon"><i class="material-icons">flag</i></span -->
+      <div class="step-list-message" style="vertical-align: top;">{{ 'DEPART' | translate }}</div>
+    </li>
+    
+    <li ng-repeat="leg in dc.selectedRoute.steps"
+      class="item item-icon {{ leg.completed ? 'passed' : '' }} {{ leg.current ? 'current' : '' }}">
+      <span class="step_at">{{leg.mgs.start   }}</span>
+      <span class="step_icon"><i class="material-icons">{{leg.icon}}</i></span>
+      <div class="step-list-message"
+        style="width: 100%; margin-right: 0px;"
+        ng-switch="leg.travel_mode">
+        <span ng-switch-when="WALKING">
+          {{ 'STEP_WALK' | translate:{ duration: leg.mgs.duration } }}
+          <!-- Cammina per {{leg.mgs.duration}} -->
+        </span>
+        <span ng-switch-when="WAIT">
+          {{ 'STEP_WAIT' | translate:{ duration: leg.mgs.duration } }}
+        </span>
+        <span ng-switch-default>
+          <span ng-if="leg.mgs.at"      >{{ 'STEP_UPAT' | translate:{ v: leg.mgs.veicle, a: leg.mgs.at } }}<br /></span>
+          <span ng-if="leg.mgs.line"    >{{ 'STEP_LINE' | translate:{ l: leg.mgs.line, a: leg.mgs.agency } }}<br /></span>
+          <span ng-if="leg.mgs.headsign">{{ 'STEP_DIR'  | translate:{ h: leg.mgs.headsign } }}<br /></span>
+          <span ng-if="leg.mgs.stops && leg.mgs.stops == 1"   >{{ 'STEP_STOP1' | translate }}<br /></span>
+          <span ng-if="leg.mgs.stops && leg.mgs.stops >  1"   >{{ 'STEP_STOPN' | translate:{ s: leg.mgs.stops } }}<br /></span>
+          <span ng-if="leg.mgs.arrive"  >{{ 'STEP_DOWN' | translate:{ e: leg.mgs.end, a: leg.mgs.arrive } }}</span>
+          <!-- {{leg.mgs.end     }} -->
+        </span>
+      </div>
+      <!-- div ng-if="leg.action"
+        ng-click="dc[leg.action](leg)"
+        class="step-button {{leg.btn_class}}">
+        <span class="trip-cost-value" ng-bind-html="leg.btn_text | to_trusted"></span>
+      </div -->
+      <!-- div class="list path_items {{ leg.$$hashKey.replace(':', '_') }}" style="display: none;">
+        <div>
+          <div class="item" ng-repeat="path_item in leg.path" ng-bind-html="path_item.instructions"></div>
+        </div>  
+      </div -->
+    </li>
+    
+    <li class="item stop-step {{ dc.selectedRoute.completed ? 'passed' : '' }}">
+      <span class="step_at">{{ dc.selectedRoute.arr_time }}</span>
+      <!-- span class="step_icon"><i class="material-icons">flag</i></span -->
+      <div class="step-list-message" style="vertical-align: top;">{{ 'ARRIVE' | translate }}</div>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div id="daaabClock"  class="daaab_tab col s12">
+    <div class="clock-wrapper" style="width: 100%;">
+  <svg id="clock" viewBox="0 0 100 100">
+    <circle id="face" cx="50" cy="50" r="45" class="NONE"></circle>
+    <g id="hands">
+      <!-- centro 50 12.5 MENO lo spessore delle linea -1 diviso 2 -->
+      <rect id="hour" x="47"  y="12.5" width="5" height="40" rx="2.5" ry="2.55"></rect>
+      <rect id="min"  x="49"  y="12.5" width="3" height="40" rx="2"   ry="2"></rect>
+      <line id="sec"  x1="50" y1="50"  x2="50" y2="18"></line>
+    </g>
+  </svg>
+  
+  <div id="clock-display">C L O C K</div>
+</div>
+  </div>
+  <div id="daaabMap"    class="daaab_tab col s12">
+    <div class="map-wrapper" id="route_map" style="">
+</div>
+  </div>
+  <div id="daaabCart"   class="daaab_tab col s12">
+    <div class="cart_ticket" ng-if="dc.selectedRoute.price">
+  <div class="route_ticket"
+    ng-click="dc.ticketPreview(dc.selectedRoute.price.ticket_url, dc.selectedRoute.price.incomplete)"
+    ng-class="dc.selectedRoute.price.incomplete ? 'route_ticket_incomplete' : ''">
+    <span class="trip-cost-value">€ {{(dc.selectedRoute.price.price / 100).toFixed(2)}}</span>
+  </div>
+</div>
+<div class="cart-wrapper" style="">
+  
+</div>
+  </div>
+  <div class="daaab_tab_footer col s12">
+    <ul class="tabs blue darken-3">
+      <li class="tab col s2" style="width: 20%;"><a href="#daaabRoutes">
+        <i class="material-icons" style="transform: scale(-1, 1);">clear_all</i>
+      </a></li>
+      <li class="tab col s2" style="width: 20%;"><a href="#daaabSteps" >
+        <i class="material-icons">view_list</i>
+      </a></li>
+      <li class="tab col s2" style="width: 20%;"><a href="#daaabClock" >
+        <i class="material-icons">schedule</i>
+      </a></li>
+      <li class="tab col s2" style="width: 20%;"><a href="#daaabMap"   >
+        <i class="material-icons">map</i>
+      </a></li>
+      <li class="tab col s2" style="width: 20%;"><a href="#daaabCart"  >
+        <i class="material-icons">shopping_cart</i>
+      </a></li>
+    </ul>
+  </div>
+</div>
+
+
+
+<!-- PATTERN PER WALK E WAIT -->
+<svg width="0px" height="0px" style="display: block;">
+  <defs>
+    <pattern id="wait-pattern" patternUnits="userSpaceOnUse" width="8" height="8">
+      <path d="M-1,0 l9,0 M-1,8 l9,0" stroke="#000000" stroke-width="1"></path>
+      <path d="M0,8 l8,-8" stroke="#000000" stroke-width="1"></path>
+    </pattern>
+    <pattern id="walk-pattern" patternUnits="userSpaceOnUse" width="15" height="8">
+      <path d="M-1,0 l16,0 M-1,8 l16,0" stroke="#000000" stroke-width="1"></path>
+      <circle cx="4" cy="4" r="2.5" fill="#555"></circle>
+    </pattern>
+  </defs>
+</svg>
+
+      </div>
+
+    </div>
+
+    <footer class="page-footer">
+<!-- TODO: policy iubenda -->
+	<div class="footer-container">
+  <div class="centro" style="margin-left: -68px;">
+  <span>
+  		<a class="mouseover" href="help.html">AIUTO</a> -
+	</span>
+  <span>
+  	<a class="mouseover" href="/info/cookies">COOKIES</a> -		
+  </span>
+  <span>
+  	<a class="mouseover" href="/info/contacts">CONTATTI</a> -
+  </span>
+  
+</div>
+</div>
+<div class="legal">
+	<p>ATVO S.p.A. - Piazza IV Novembre, 8 - 30027 San Donà di Piave - VE - +39 0421 5944 - <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="83e2f7f5ecadf0f3e2c3e4eee2eaefade0ecee">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> - <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="98ebfdffeafdecfdeaf1f9d8e8fdfbb6f9eceef7b6f1ec">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> - Cod. Fisc.: 84002020273 - P.I.: 00764110276 - Registro Imprese VE 84002020273 Numero Rea 240259 - Capitale Sociale 8.974.600,00 €</p>
+</div>
+</footer>
+    <!--cookie bar-->
+</body>
+</html>

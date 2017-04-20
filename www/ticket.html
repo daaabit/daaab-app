@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="it" ng-app="app">
+  <head>
+  <script src="components/loader.js"></script>
+  <link rel="stylesheet" href="components/loader.css">
+
+    <meta charset="utf-8" />
+    <!-- INIZIO FAVICON -->
+    <link rel="apple-touch-icon" sizes="57x57"          href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="60x60"          href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="72x72"          href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="76x76"          href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="114x114"        href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="120x120"        href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="144x144"        href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="152x152"        href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180"        href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="192x192"   href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32"     href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96"     href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16"     href="/favicon.ico">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/favicon.ico">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-startup-image"         href="/favicon.ico">
+    <!-- FINE FAVICON -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- hide url bar on mobile devices -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <title>daAaB Quick Ticket</title>
+    
+    <!-- css -->
+    <!-- link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" -->
+    <link rel="stylesheet" media="all" href="css/daaab.css" />
+    
+    <!-- scripts -->
+    <script type="text/javascript">
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.src = "js/daaab.js";
+  document.getElementsByTagName("head")[0].appendChild(script);
+  
+  try {
+    var gmaps = document.createElement("script");
+    gmaps.type = "text/javascript";
+    gmaps.src = "https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBo03-1oZ9hOXS1wRn7I7E3mo-Zioxb2I8&language=it&callback=onMapComplete";
+    document.getElementsByTagName("head")[0].appendChild(gmaps);
+  }
+  catch(err) {
+    alert("Cannot load google map library, please check network");
+  }
+  
+  // CHECK FIRST LAUNCH
+  setTimeout(function(){
+    // PER TEST: window.localStorage.removeItem('launchCount')
+    var applaunchCount = window.localStorage.getItem('launchCount');
+    //Check if it already exists or not
+    if (applaunchCount) {
+      //This is a second time launch, and count = applaunchCount
+      window.localStorage.setItem('launchCount', parseInt(applaunchCount) + 1);
+    } else {
+      //Local storage is not set, hence first time launch. set the local storage item
+      window.localStorage.setItem('launchCount', 1);
+      setTimeout(function(){ document.location = 'help.html' }, 250);
+    }
+    
+    // https://quickleft.com/blog/cookies-with-my-cors/
+    // http://blog.carbonfive.com/2012/02/27/supporting-cross-domain-ajax-in-rails-using-jsonp-and-cors/
+    // https://gist.github.com/AdrianTeh/3561310
+    // http://justbuildsomething.com/cordova-and-express-session/
+    $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+      options.crossDomain = true;
+      options.xhrFields = { withCredentials: true };
+    });
+    
+    // BACO COOKIE LAW
+    // setTimeout(function(){ $('.lean-overlay').remove(); }, 1250);
+  }, 350);
+</script>
+
+    
+    <script type="text/javascript" src="https://checkout.stripe.com/checkout.js"></script>
+    
+    
+  </head>
+  <body
+    data-controller="tickets/ticket"
+    data-action="index"
+    data-controller_action="tickets/ticket/index"
+    class="loaded"
+    ng-controller="DaaabCtrl as dc">
+    <style type="text/css" media="screen">
+  body, html {
+    font: 'Montserrat';
+  }
+  
+  .spinner {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+
+    margin: 0px;
+    text-align: center;
+    font-size: 10px;
+
+    background-color: #1565C0;
+    opacity: 1;
+    z-index: 2001;
+  }
+  
+  .spinner > div {
+    /* background-color: #333; */
+    background-color: rgba(250,250,250,0.65);
+    height: 20px;
+    width: 300px;
+    display: block;
+    /* SENZA SPAN margin-bottom: 10px; */
+    margin-bottom: -10px;
+
+    -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+    animation: sk-stretchdelay 1.2s infinite ease-in-out;
+  }
+  
+  .spinner .rect1 {
+    margin-left: calc(50% - 210px);
+  }
+
+  .spinner .rect2 {
+    margin-left: calc(50% - 170px);
+    -webkit-animation-delay: -1.1s;
+    animation-delay: -1.1s;
+  }
+  
+  .spinner .rect3 {
+    margin-left: calc(50% - 130px);
+    -webkit-animation-delay: -1.0s;
+    animation-delay: -1.0s;
+  }
+  
+  .spinner .rect4 {
+    margin-left: calc(50% - 90px);
+    -webkit-animation-delay: -0.9s;
+    animation-delay: -0.9s;
+  }
+
+  .spinner span {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #1565C0;
+    position: relative;
+    display: inline-block;
+    top: -8px;
+  }
+  .spinner .rspan1 {
+    margin-right: 0.85em;
+  }
+  .spinner .rspan1,
+  .spinner .rspan3 {
+    font-weight: normal;
+    color: gray;
+    opacity: 1;
+  }
+  .spinner .rspan2,
+  .spinner .rspan4 {
+    font-weight: bold;
+  }
+        
+  @-webkit-keyframes sk-stretchdelay {
+    0%, 40%, 100% { -webkit-transform: scaleX(0.5) }  
+    20% { -webkit-transform: scaleX(1.0) }
+  }
+  
+  @keyframes sk-stretchdelay {
+    0%, 40%, 100% { 
+      transform: scaleX(0.5);
+      -webkit-transform: scaleX(0.5);
+    }  20% { 
+      transform: scaleX(1.0);
+      -webkit-transform: scaleX(1.0);
+    }
+  }
+  .spinner > div.spacer {
+    animation: none;
+    height: 33%;
+    background-color: transparent;
+    display: block;
+  }
+  .spinner > div.please-wait {
+    animation: none;
+
+    background-color: transparent;
+    height: 20px;
+    width: 300px;
+    display: block;
+    margin-bottom: 10px;
+
+    text-align: center;
+    margin-top: 1em;
+    width: 100%;
+    /* color: #333; */
+    color: rgba(250,250,250,0.65);
+    font-size: 2em;
+  }
+</style>
+<div class="spinner" id="appSpinner" style="display: none;">
+    <div class="spacer"></div>
+    <div class="rect1"></div><span class="rspan1">da</span>
+    <div class="rect2"></div><span class="rspan2">A</span>
+    <div class="rect3"></div><span class="rspan3">a</span>
+    <div class="rect4"></div><span class="rspan4">B</span>
+    <div class="please-wait">Loading...</div>
+  </div>
+    
+    
+    <div class="main page-container" data-navbar="visible">
+      <!-- Menu laterale -->
+<nav id="main_nav"
+  class="light-blue lighten-1 main_nav"
+  role="navigation"  style="width:0px">
+  <ul id="nav-mobile" class="side-nav fixed">
+    <!-- Spazio user -->
+    <li>
+      <div class="userView"
+  
+  data-user='{"err":"Not Logged"}'>
+    <!-- utente loggato -->
+    <!-- a href="#!user"><div class="circle"><span class="user_letter">J</span></div></a>
+    <a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a -->
+    <!-- a href="#!user"><div class="circle">
+      <i class="material-icons user_letter"
+        style="font-size: 3em; margin-top: 0.1em;">account_circle</i>
+    </div></a>
+    <a href="#!email"><span class="white-text email">Click here to login</span></a -->
+  
+  <span id="user_loading">
+    <div class="progress">
+      <div class="indeterminate"></div>
+    </div>
+    <span class="white-text email">Controllando l&#39;utente... </span>
+  </span>
+  
+  <span id="user_logged" style="display: none;">
+    <a href="#!user">
+      <div class="circle"><span class="user_letter">X</span></div>
+      <span class="white-text credit"
+        style="float: right; top: -4em; position: relative;"
+        >--</span>
+    </a>
+    <a href="#!email"><span class="white-text email"><span class="__cf_email__" data-cfemail="5b23231b2222752121">[email&#160;protected]</span><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script></span></a>
+  </span>
+  
+  <span id="user_notlogged" style="display: none;">
+    <a href="#!user"><div class="circle">
+      <i class="material-icons user_letter"
+        style="font-size: 3em; margin-top: 0.1em;">account_circle</i>
+    </div></a>
+    <a href="#!email"><span class="white-text email">Clicca qui per accedere </span></a>
+  </span>
+</div>
+
+    </li>
+
+    <!-- Menu principale -->
+    <li style="clear: both;">
+      <a class="" href="index.html">
+        <i class="material-icons">timeline</i>Percorso da A a B
+</a>    </li>
+    <li style="clear: both;">
+      <a class="active" href="ticket.html">
+        <i class="material-icons">confirmation_number</i>Acquisto
+</a>    </li>
+    <li style="clear: both;">
+      <a class="" href="wallet.html">
+        <i class="material-icons">account_balance_wallet</i>Portafoglio
+</a>    </li>
+    <li style="clear: both;">
+      <a class="" href="help.html">
+        <i class="material-icons">help_outline</i>Come funziona
+</a>    </li>
+    <li style="clear: both;">
+      <a onclick="navigator.app.loadUrl('https://www.daaab.it', { openExternal:true });">
+        <i class="material-icons">info_outline</i>Più informazioni
+</a>    </li>
+    <li style="clear: both;">
+      <a id="getFeeedback" href="#">
+        <i class="material-icons">sms_failed</i>Scrivici
+</a>    </li>
+    <!-- li style="clear: both;">
+        <i class="material-icons">cast</i>
+    </li -->
+    
+    <li><div class="divider"></div></li>
+    
+    <!-- Menu lingua -->
+      
+      
+  </ul>
+  <div class="nav-wrapper xvalign-wrapper">
+  <div class="row xvalign">
+      <div class="">
+        <a 
+          id="nav_btn"
+          style="height: 40px;"
+          data-activates="nav-mobile"
+          class="button-collapse">
+          <i class="material-icons">menu</i>
+        </a>
+         <!-- From-To-header -->
+        <div class="from_to_wrapper"> 
+          <div class="from_to_header">
+            <div class="header_stop from_stop">
+            &nbsp;
+            </div>
+            <!--div class="divider"></div-->
+            <div class="header_stop to_stop">
+            &nbsp;
+            </div>
+          </div>
+        </div>
+        
+        <div class="inv_share_btn" style="display: none">
+          <div class="fixed-action-btn horizontal">
+            <a id="share_btn" class="btn-floating btn-medium">
+              <i class="material-icons" 
+              style="color:blue;line-height: 38px;height: 38px;">share</i>
+            </a>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div id="modal_login"
+  class="modal bottom-sheet"
+  data-stripe_key="pk_live_nNL2BjQOUMDsZF5CVOjBsgcc"
+  data-not_found="Utente non trovato"
+  data-strip_name="daAaB.it"
+  data-strip_description="Login al tuo Account"
+  data-strip_panel_label="Login (nulla da pagare!)"
+  >
+  <div class="modal-content">
+    <h4>Accedi con</h4>
+    <a class="waves-effect waves-light btn fecebook" href="#">Facebook</a>
+    
+    <a class="waves-effect waves-light btn paypal"   href="#">PayPal</a>
+    <a class="waves-effect waves-light btn stripe"   href="#">Stripe</a>
+  </div>
+</div>
+
+<!-- impostare display: block; per visualizzarla -->
+<div id="shareOptions" class="modal bottom-sheet my-include zmodal-fixed-footer" style="border: 5px solid #3288e6;">
+  <div class="modal-content option_content" style="background-color: white;">  
+    <!-- bottoni principali -->
+    <ul class="shareOptionlist">
+      <li class="share-item" data-type="trip"                       >{{ 'SHARE_TRIP' | translate }}</li>
+      <li class="share-item" data-type="path"                       >{{ 'SHARE_PATH' | translate }}</li>
+      <li class="share-item" data-type="come" style="display: none;">{{ 'SHARE_COME' | translate }}</li>
+    </ul>
+    
+    <div class="progress_title" style="display: none;">
+      <span class="card-title">{{ 'SHARE_LOAD' | translate }}</span>
+    </div>
+    <div class="progress" style="display: none;">
+      <div class="indeterminate"></div>
+    </div>
+    
+    <!-- share message -->
+    <textarea readonly name="share-msg"
+      style="color: blue; border: 1px solid blue; margin-bottom: 0px; height: 5em;"></textarea>
+    
+    <!-- Da nascondere prima delle altre operazioni -->
+    <ul class="sharelist">
+      <li data-type="wa">
+        <a id="whatsapp" class="btn-floating green" style="text-align: center;">
+          <img style="width: 24px; height: 24px; margin-top: 5px" src="assets/wp.png" alt="Wp e5a07f17da2a269fa6d0d2a2a2892e94c75336a219183e15846503e258b085dc" />
+        </a>
+        <span> {{'SHARE_LNK_WA' | translate }}</span> 
+      </li>
+      <li data-type="sms">
+        <a id="sms" class="btn-floating yellow">
+          <i class="material-icons" style="line-height: 38px;height: 38px;">sms</i>
+        </a>
+        <span> {{'SHARE_LNK_SMS' | translate }}</span> 
+      </li>
+      <li data-type="email">
+        <a id="byemail" class="btn-floating red">
+          <i class="material-icons" style="line-height: 38px;height: 38px;">email</i>
+        </a>
+        <span> {{'SHARE_LNK_EMAIL' | translate }}</span> 
+      </li>
+    </ul>
+  </div>
+  
+  <!-- div class="modal-footer"> 
+    <a id="closeShareModal" class="modal-action modal-close btn blue darken-3">Close</a> 
+  </div -->
+</div>
+
+
+      <!-- Pagina -->
+      <div class="section no-pad-bot main-content" id="index-banner">
+        <div id="agency_main_list" class="container fullpage">
+  
+  <!-- Logo -->
+  <div class="daaab-title">
+    <img class="logo" src="assets/logo.svg" alt="Logo 4df0d3c17572021dde589eb900ce2773c00a58ba9231dd63be6833241ca36157" />
+  </div>
+
+  <div class="row">
+
+    <!-- h5 class="white-text center">Seleziona una compagnia e scegli il biglietto, <br> oppure esegui una ricerca libera.</h5 -->
+    
+    <div class="col l6 m6 s12">
+      <div class="card agency_choose" id="define_from_to_card">
+        <div class="card-image">
+          <img src="static/free_search2.jpg" alt="Free search2" />
+          <!-- span class="card-title">Cerca da A a B</span -->
+          <div class="overlay_grad"></div>
+          <div class="freesearch valign-wrapper">
+            <div class="center valign">
+              <a class="btn"><i class="material-icons left">search</i>search</a>
+            </div>
+          </div>
+        </div>
+        <div class="card-action">
+          <a lass="valign-wrapper" href="#">Ricerca libera<i class="material-icons valign right">search</i></a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col l6 m6 s12">
+      <div class="card agency_choose" id="choose_agency">
+        <div class="card-image" style="padding: 0px; padding-left: 1em;">
+          <img src="assets/atvo.jpg" alt="Atvo bkg 4a0dcc1a0b4fde9bacaf28b7e256115dd71b8e79a1e6bdc745e1c8c240b186b6" />
+          <!--img class="quick_image responsive-img" src="../assets/atvo-bkg.jpg"-->
+          <div class="overlay_grad" style="margin-left: -1em;"></div>
+          <div class="card-title" style="padding-bottom: 5px;">
+            <p class="quick_title">
+              ATVO S.p.A.<br />F.A.P. Autoservizi S.p.A.
+            </p>
+            <!-- div class="divider"></div>
+            <p class="quick_descr">Quick Ticket</p --> 
+          </div> 
+        </div>
+        <div class="card-action">
+          <a class="valign-wrapper" href="#">Biglietto Veloce<i class="material-icons valign right">arrow_forward</i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="agency_list" class="container fullpage" style="display: none;">
+  <div class="row">
+    <div class="back_to_home back_div_button">
+  <span><i class="material-icons valign">arrow_back</i></span>
+  <span>Indietro</span>
+</div>
+  <div class="col l4 m6 s12">
+    <div class="card agency_choose single_agency" data-agency_id="atvo">
+      <div class="card-image">
+        <img src="assets/atvo.jpg" alt="Atvo bkg 4a0dcc1a0b4fde9bacaf28b7e256115dd71b8e79a1e6bdc745e1c8c240b186b6" />
+        <!--img class="quick_image responsive-img" src="../assets/atvo-bkg.jpg"-->
+        <div class="overlay_grad"></div>
+        <div class="card-title">
+          <p class="quick_title">ATVO</p>
+          <div class="divider"></div>
+          <p class="quick_descr">ATVO S.p.A.</p> 
+        </div> 
+      </div>
+      <div class="card-action">
+        <a class="valign-wrapper" href="#">Biglietto Veloce<i class="material-icons valign right">arrow_forward</i></a>
+      </div>
+    </div>
+  </div>
+  <div class="col l4 m6 s12">
+    <div class="card agency_choose single_agency" data-agency_id="FAP">
+      <div class="card-image">
+        <img src="assets/atvo.jpg" alt="Atvo bkg 4a0dcc1a0b4fde9bacaf28b7e256115dd71b8e79a1e6bdc745e1c8c240b186b6" />
+        <!--img class="quick_image responsive-img" src="../assets/atvo-bkg.jpg"-->
+        <div class="overlay_grad"></div>
+        <div class="card-title">
+          <p class="quick_title">FAP</p>
+          <div class="divider"></div>
+          <p class="quick_descr">FAP Autoservizi S.p.A.</p> 
+        </div> 
+      </div>
+      <div class="card-action">
+        <a class="valign-wrapper" href="#">Biglietto Veloce<i class="material-icons valign right">arrow_forward</i></a>
+      </div>
+    </div>
+  </div>
+
+  </div>
+</div>
+  <div id="atvo_ticket_list" class="container fullpage price_list" style="display: none;">
+  <div class="back_to_agencies back_div_button">
+    <span><i class="material-icons valign">arrow_back</i></span>
+    <span>ATVO</span>
+  </div>
+  <ul class="collapsible" data-collapsible="accordion">
+      <li>
+        <div class="collapsible-header ">
+          <span class="closed"><i class="material-icons">keyboard_arrow_right</i></span>
+          <span class="opened"><i class="material-icons">keyboard_arrow_down</i></span>
+          <!-- i class="material-icons">filter_drama</i -->
+          Biglietti Urbani
+          <!-- br />Biglietti Urbani -->
+        </div>
+        <div class="collapsible-body">
+          <div class="collection">
+              <a href="#!" class="collection-item fare_choose" data-fare_id="283">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  1,30 €
+                </span>
+                <span>Urbano BIBIONE corsa semplice</span>
+                <span class="secondary-content">Una sola corsa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="282">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  1,80 €
+                </span>
+                <span>Urbano BIBIONE 60 minuti</span>
+                <span class="secondary-content">Intera rete</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="277">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  1,30 €
+                </span>
+                <span>Urbano CAORLE Linea 3</span>
+                <span class="secondary-content">Corsa semplice linea 3</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="278">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  1,30 €
+                </span>
+                <span>Urbano CAORLE scolastico</span>
+                <span class="secondary-content">Scolastico</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="9">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  1,50 €
+                </span>
+                <span>Urbano CAORLE Linea 1</span>
+                <span class="secondary-content">Corsa semplice linea 1</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="1">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  2,00 €
+                </span>
+                <span>Urbano CAVALLINO-TREPORTI</span>
+                <span class="secondary-content">Corsa semplice</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="286">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  1,30 €
+                </span>
+                <span>Urbano LIDO DI JESOLO corsa semplice</span>
+                <span class="secondary-content">Una sola corsa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="284">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  1,80 €
+                </span>
+                <span>Urbano LIDO DI JESOLO 60 minuti</span>
+                <span class="secondary-content">Intera rete</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="285">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  2,20 €
+                </span>
+                <span>Urbano LIDO DI JESOLO 90 minuti</span>
+                <span class="secondary-content">Intera rete</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="287">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  1,30 €
+                </span>
+                <span>Urbano SAN DONÀ DI PIAVE Donatello</span>
+                <span class="secondary-content">Corsa semplice</span>
+              </a>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="collapsible-header ">
+          <span class="closed"><i class="material-icons">keyboard_arrow_right</i></span>
+          <span class="opened"><i class="material-icons">keyboard_arrow_down</i></span>
+          <!-- i class="material-icons">filter_drama</i -->
+          Biglietti Bagaglio
+          <!-- br />Biglietti Bagaglio -->
+        </div>
+        <div class="collapsible-body">
+          <div class="collection">
+              <a href="#!" class="collection-item fare_choose" data-fare_id="279">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  1,30 €
+                </span>
+                <span>Bagaglio</span>
+                <span class="secondary-content">fino a 30km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="280">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  1,90 €
+                </span>
+                <span>Bagaglio</span>
+                <span class="secondary-content">da 30,1 a 50 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="281">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  2,40 €
+                </span>
+                <span>Bagaglio</span>
+                <span class="secondary-content">oltre 50km</span>
+              </a>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="collapsible-header ">
+          <span class="closed"><i class="material-icons">keyboard_arrow_right</i></span>
+          <span class="opened"><i class="material-icons">keyboard_arrow_down</i></span>
+          <!-- i class="material-icons">filter_drama</i -->
+          Biglietti Extraurbani
+          <!-- br />Biglietto a fascia chilometrica -->
+        </div>
+        <div class="collapsible-body">
+          <div class="collection">
+              <a href="#!" class="collection-item fare_choose" data-fare_id="8">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  1,30 €
+                </span>
+                <span>Extraurbano CLASSE 1</span>
+                <span class="secondary-content">Corsa semplice fino a 7 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="10">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  1,90 €
+                </span>
+                <span>Extraurbano CLASSE 2</span>
+                <span class="secondary-content">Corsa semplice da 7.1 a 14 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="11">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  2,40 €
+                </span>
+                <span>Extraurbano CLASSE 3</span>
+                <span class="secondary-content">Corsa semplice da 14.1 a 20 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="12">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  3,00 €
+                </span>
+                <span>Extraurbano CLASSE 4</span>
+                <span class="secondary-content">Corsa semplice da 20.1 a 30 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="13">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  3,50 €
+                </span>
+                <span>Extraurbano CLASSE 5</span>
+                <span class="secondary-content">Corsa semplice da 30.1 a 42 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="14">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  4,00 €
+                </span>
+                <span>Extraurbano CLASSE 6</span>
+                <span class="secondary-content">Corsa semplice da 42.1 a 50 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="15">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  4,50 €
+                </span>
+                <span>Extraurbano CLASSE 7</span>
+                <span class="secondary-content">Corsa semplice da 50.1 a 64 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="16">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  5,00 €
+                </span>
+                <span>Extraurbano CLASSE 8</span>
+                <span class="secondary-content">Corsa semplice da 64.1 a 76 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="17">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  5,50 €
+                </span>
+                <span>Extraurbano CLASSE 9</span>
+                <span class="secondary-content">Corsa semplice da 76.1 a 88 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="47">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  5,90 €
+                </span>
+                <span>Extraurbano CLASSE 10</span>
+                <span class="secondary-content">Corsa semplice da 88.1 a 100 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="48">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  6,70 €
+                </span>
+                <span>Extraurbano CLASSE 11</span>
+                <span class="secondary-content">Corsa semplice da 100.1 a 112 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="49">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  7,30 €
+                </span>
+                <span>Extraurbano CLASSE 12</span>
+                <span class="secondary-content">Corsa semplice da 112.1 a 124 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="50">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  8,70 €
+                </span>
+                <span>Extraurbano CLASSE 13</span>
+                <span class="secondary-content">Corsa semplice da 124.1 a 148 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="51">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  10,20 €
+                </span>
+                <span>Extraurbano CLASSE 14</span>
+                <span class="secondary-content">Corsa semplice da 148.1 a 172 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="52">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  11,60 €
+                </span>
+                <span>Extraurbano CLASSE 15</span>
+                <span class="secondary-content">Corsa semplice da 172.1 a 196 km</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="53">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  13,40 €
+                </span>
+                <span>Extraurbano CLASSE 16</span>
+                <span class="secondary-content">Corsa semplice da 196.1 a 220 km</span>
+              </a>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="collapsible-header ">
+          <span class="closed"><i class="material-icons">keyboard_arrow_right</i></span>
+          <span class="opened"><i class="material-icons">keyboard_arrow_down</i></span>
+          <!-- i class="material-icons">filter_drama</i -->
+          Biglietti Express
+          <!-- br />Biglietti Express -->
+        </div>
+        <div class="collapsible-body">
+          <div class="collection">
+              <a href="#!" class="collection-item fare_choose" data-fare_id="132">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  3,50 €
+                </span>
+                <span>AEROPORTO MARCO POLO - LIDO DI JESOLO</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="131">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  5,90 €
+                </span>
+                <span>AEROPORTO MARCO POLO - ERACLEA MARE</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="137">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  6,90 €
+                </span>
+                <span>AEROPORTO MARCO POLO - PUNTA SABBIONI</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="128">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  8,70 €
+                </span>
+                <span>AEROPORTO MARCO POLO - CAORLE</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="127">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  9,60 €
+                </span>
+                <span>AEROPORTO MARCO POLO - BIBIONE</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="289">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  10,50 €
+                </span>
+                <span>AEROPORTO TREVISO - LIDO DI JESOLO</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="293">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  11,50 €
+                </span>
+                <span>AEROPORTO TREVISO - PUNTA SABBIONI</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="292">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  12,90 €
+                </span>
+                <span>AEROPORTO TREVISO - ERACLEA MARE</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="291">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  15,70 €
+                </span>
+                <span>AEROPORTO TREVISO - CAORLE</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="290">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  16,60 €
+                </span>
+                <span>AEROPORTO TREVISO - BIBIONE</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="collapsible-header ">
+          <span class="closed"><i class="material-icons">keyboard_arrow_right</i></span>
+          <span class="opened"><i class="material-icons">keyboard_arrow_down</i></span>
+          <!-- i class="material-icons">filter_drama</i -->
+          Biglietti Aeroportuali
+          <!-- br />Biglietti per gli aeroporti -->
+        </div>
+        <div class="collapsible-body">
+          <div class="collection">
+              <a href="#!" class="collection-item fare_choose" data-fare_id="134">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  8,00 €
+                </span>
+                <span>AEROPORTO MARCO POLO - MESTRE</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="2">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  8,00 €
+                </span>
+                <span>AEROPORTO MARCO POLO - VENEZIA</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="18">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  9,00 €
+                </span>
+                <span>AEROPORTO MARCO POLO - TREVISO</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="288">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  12,00 €
+                </span>
+                <span>AEROPORTO TREVISO - MESTRE</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+              <a href="#!" class="collection-item fare_choose" data-fare_id="4">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  12,00 €
+                </span>
+                <span>AEROPORTO TREVISO - VENEZIA</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+          </div>
+        </div>
+      </li>
+  </ul>
+</div>
+  <div id="FAP_ticket_list" class="container fullpage price_list" style="display: none;">
+  <div class="back_to_agencies back_div_button">
+    <span><i class="material-icons valign">arrow_back</i></span>
+    <span>FAP</span>
+  </div>
+  <ul class="collapsible" data-collapsible="accordion">
+      <li>
+        <div class="collapsible-header active">
+          <span class="closed"><i class="material-icons">keyboard_arrow_right</i></span>
+          <span class="opened"><i class="material-icons">keyboard_arrow_down</i></span>
+          <!-- i class="material-icons">filter_drama</i -->
+          Biglietti Aeroportuali
+          <!-- br />Biglietti per gli aeroporti -->
+        </div>
+        <div class="collapsible-body">
+          <div class="collection">
+              <a href="#!" class="collection-item fare_choose" data-fare_id="294">
+                <span alt="" class="circle" style="padding-right: 1em;">
+                  9,00 €
+                </span>
+                <span>AEROPORTO MARCO POLO - TREVISO</span>
+                <span class="secondary-content">o viceversa</span>
+              </a>
+          </div>
+        </div>
+      </li>
+  </ul>
+</div>
+
+
+      </div>
+
+    </div>
+
+    <footer class="page-footer">
+<!-- TODO: policy iubenda -->
+	<div class="footer-container">
+  <div class="centro" style="margin-left: -68px;">
+  <span>
+  		<a class="mouseover" href="help.html">AIUTO</a> -
+	</span>
+  <span>
+  	<a class="mouseover" href="/info/cookies">COOKIES</a> -		
+  </span>
+  <span>
+  	<a class="mouseover" href="/info/contacts">CONTATTI</a> -
+  </span>
+  
+</div>
+</div>
+<div class="legal">
+	<p>ATVO S.p.A. - Piazza IV Novembre, 8 - 30027 San Donà di Piave - VE - +39 0421 5944 - <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="ccadb8baa3e2bfbcad8caba1ada5a0e2afa3a1">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> - <a class="__cf_email__" href="/cdn-cgi/l/email-protection" data-cfemail="1467717366716071667d75546471773a7560627b3a7d60">[email&#160;protected]</a><script data-cfhash='f9e31' type="text/javascript">/* <![CDATA[ */!function(t,e,r,n,c,a,p){try{t=document.currentScript||function(){for(t=document.getElementsByTagName('script'),e=t.length;e--;)if(t[e].getAttribute('data-cfhash'))return t[e]}();if(t&&(c=t.previousSibling)){p=t.parentNode;if(a=c.getAttribute('data-cfemail')){for(e='',r='0x'+a.substr(0,2)|0,n=2;a.length-n;n+=2)e+='%'+('0'+('0x'+a.substr(n,2)^r).toString(16)).slice(-2);p.replaceChild(document.createTextNode(decodeURIComponent(e)),c)}p.removeChild(t)}}catch(u){}}()/* ]]> */</script> - Cod. Fisc.: 84002020273 - P.I.: 00764110276 - Registro Imprese VE 84002020273 Numero Rea 240259 - Capitale Sociale 8.974.600,00 €</p>
+</div>
+</footer>
+    <!--cookie bar-->
+</body>
+</html>

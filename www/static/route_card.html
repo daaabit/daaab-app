@@ -1,0 +1,59 @@
+<div
+  class="item route-card {{route.selected ? 'route-card-active' : ''}}">
+  <route-timeline route="route" rescale="true" businline="true"></route-timeline>
+  
+  <div class="route-depart">
+    <span ng-bind-html="route.dep_time | to_trusted"></span>
+    &nbsp;&nbsp;
+    <!-- span ng-bind-html="route.dep_bus  | to_trusted" class="bus"></span -->
+  </div>
+  <div class="route-length">
+    <span>{{route.trip_time}}</span><span>'</span>
+    <span>(<i class="material-icons">directions_walk</i> {{route.walk_min}}')</span>
+  </div>
+  <div class="route-arrival">
+    <span ng-bind-html="route.arr_time | to_trusted"></span>
+  </div>
+  <div ng-if="route.price"
+    zng-click="goto(route.price.ticket_url)"
+    ng-class="route.price.incomplete ? 'route_ticket_incomplete' : ''"
+    class="route_ticket">
+    <span class="trip-cost-value">€ {{(route.price.price / 100).toFixed(2)}}</span>
+  </div>
+  <!-- div class="route-depart"  ng-bind-html="route.departure_display | to_trusted"></div -->
+  <!-- div class="route-arrival" ng-bind-html="route.arrival_display | to_trusted"  ></div -->
+  <i ng-if="route.has_know_agency"
+    style="position: absolute;
+      right: 2px;
+      bottom: 2px;
+      color: white;
+      background-color: #3983de;
+      border-radius: 14px;
+      width: 28px;
+      height: 28px;
+      padding-top: 4px;
+      padding-left: 1px;"
+    class='material-icons'>&#xE8CC;</i>
+  <!-- div ng-if="route.has_know_agency" style="position: absolute;
+      width: 50px;
+      right: 10px;
+      display: inline-block;
+      border-color: transparent;
+      background-color: transparent;
+      background-image: url('/images/ticket-bg.png');
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      color: white;
+      font-style: normal;
+      font-weight: normal;
+      height: 23px;
+      width: 70px;
+      padding-bottom: 5px;
+      top: 64px;
+      right: 0px;
+      opacity: .75;
+      text-align: center;" -->
+    <!-- span class="icon" ng-class="route.fare.currency_icon"></span -->
+    <!-- span class="trip-cost-value" ng-bind-html="route.fare.display_value | to_trusted"></span -->
+  <!-- /div -->
+</div>
