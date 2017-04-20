@@ -63,6 +63,11 @@
         },
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "it.daaab.app"
+        },
+        "cordova-plugin-facebook4": {
+            "APP_ID": "169831380083844",
+            "APP_NAME": "daAaB",
+            "PACKAGE_NAME": "it.daaab.app"
         }
     },
     "dependent_plugins": {

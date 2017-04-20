@@ -115,4 +115,8 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
+    <plugin name="cordova-plugin-facebook4" spec="~1.7.4">
+        <variable name="APP_ID" value="169831380083844" />
+        <variable name="APP_NAME" value="daAaB" />
+    </plugin>
 </widget>
