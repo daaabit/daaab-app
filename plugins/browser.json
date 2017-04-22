@@ -8,74 +8,69 @@
     },
     "installed_plugins": {
         "cordova-plugin-battery-status": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-camera": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-media-capture": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-console": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-contacts": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-device": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-device-motion": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-device-orientation": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-dialogs": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-file-transfer": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-geolocation": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-globalization": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-inappbrowser": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-media": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-network-information": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-splashscreen": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-statusbar": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-vibration": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "it.daaab.app"
-        },
-        "cordova-plugin-facebook4": {
-            "APP_ID": "169831380083844",
-            "APP_NAME": "daAaB",
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         }
     },
     "dependent_plugins": {
         "cordova-plugin-compat": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-file": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         }
     }
 }
