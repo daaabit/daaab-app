@@ -22,13 +22,9 @@
         "cordova-plugin-inappbrowser": {
             "PACKAGE_NAME": "co.osti.daaab"
         },
-        "cordova-plugin-network-information": {
-            "PACKAGE_NAME": "co.osti.daaab"
-        },
         "cordova-plugin-splashscreen": {
             "PACKAGE_NAME": "co.osti.daaab"
         },
-
         "cordova-plugin-vibration": {
             "PACKAGE_NAME": "co.osti.daaab"
         },
@@ -36,6 +32,9 @@
             "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-x-toast": {
+            "PACKAGE_NAME": "co.osti.daaab"
+        },
+        "cordova-plugin-network-information": {
             "PACKAGE_NAME": "co.osti.daaab"
         }
     },

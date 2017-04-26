@@ -74,32 +74,35 @@
     "cordova-plugin-googleplus": {
         "source": {
             "type": "registry",
-<<<<<<< HEAD
-            "id": "cordova-plugin-facebook4@~1.7.4"
-=======
             "id": "cordova-plugin-googleplus"
->>>>>>> 3620508827a80b0889b39d967f82a33d73a3c534
         },
         "is_top_level": true,
         "variables": {
             "REVERSED_CLIENT_ID": "co.osti.daaab"
         }
     },
-<<<<<<< HEAD
     "cordova-plugin-compat": {
         "source": {
             "type": "registry",
             "id": "cordova-plugin-compat"
         },
         "is_top_level": false,
-=======
+        "variables": {}
+    },
     "cordova-plugin-x-toast": {
         "source": {
             "type": "registry",
             "id": "cordova-plugin-x-toast@~2.6.0"
         },
         "is_top_level": true,
->>>>>>> 3620508827a80b0889b39d967f82a33d73a3c534
+        "variables": {}
+    },
+    "cordova-plugin-statusbar": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-statusbar@2.2.2"
+        },
+        "is_top_level": true,
         "variables": {}
     }
 }
