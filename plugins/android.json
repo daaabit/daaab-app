@@ -8,41 +8,37 @@
     },
     "installed_plugins": {
         "cordova-plugin-console": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-dialogs": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-geolocation": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-globalization": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-inappbrowser": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-network-information": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-splashscreen": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
+
         "cordova-plugin-vibration": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "it.daaab.app"
+            "PACKAGE_NAME": "co.osti.daaab"
         },
-        "cordova-plugin-facebook4": {
-            "APP_ID": "169831380083844",
-            "APP_NAME": "daAaB",
-            "PACKAGE_NAME": "it.daaab.app"
+        "cordova-plugin-x-toast": {
+            "PACKAGE_NAME": "co.osti.daaab"
         }
     },
     "dependent_plugins": {
-        "cordova-plugin-compat": {
-            "PACKAGE_NAME": "it.daaab.app"
-        }
     }
 }
