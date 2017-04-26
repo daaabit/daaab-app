@@ -67,6 +67,9 @@
         "cordova-plugin-googleplus": {
             "REVERSED_CLIENT_ID": "co.osti.daaab",
             "PACKAGE_NAME": "co.osti.daaab"
+        },
+        "cordova-plugin-x-toast": {
+            "PACKAGE_NAME": "co.osti.daaab"
         }
     },
     "dependent_plugins": {

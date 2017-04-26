@@ -123,5 +123,6 @@
     </gap:plugin>
     <preference name="StatusBarOverlaysWebView" value="true" />
     <preference name="StatusBarBackgroundColor" value="#1e88e5" />
-    <preference name="StatusBarStyle"           value="lightcontent" />
+    <preference name="StatusBarStyle" value="lightcontent" />
+    <plugin name="cordova-plugin-x-toast" spec="~2.6.0" />
 </widget>
