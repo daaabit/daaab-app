@@ -278,7 +278,7 @@
         <i class="material-icons">confirmation_number</i>Acquisto
 </a>    </li>
     <li style="clear: both;">
-      <a class="active" href="wallet.html">
+      <a class="active" href="https://daaab.it/tickets/ticket/wallet">
         <i class="material-icons">account_balance_wallet</i>Portafoglio
 </a>    </li>
     <li style="clear: both;">
@@ -300,8 +300,20 @@
     <li><div class="divider"></div></li>
     
     <!-- Menu lingua -->
-      
-      
+      <li>
+        <a href="https://daaab.it/tickets/ticket/wallet?locale=it">
+          <div class="chip" style="width: 100%; opacity: 0.6;">
+            <img src="/images/locale/it.svg" alt="Italiano">
+            Italiano
+          </div>
+</a>      </li>
+      <li>
+        <a href="https://daaab.it/tickets/ticket/wallet?locale=en">
+          <div class="chip" style="width: 100%; opacity: 1;">
+            <img src="/images/locale/en.svg" alt="English">
+            English
+          </div>
+</a>      </li>
   </ul>
   <div class="nav-wrapper xvalign-wrapper">
   <div class="row xvalign">
@@ -422,7 +434,7 @@
 </style>
 <div
   class="container wallet_container"
-  ng-include="'/tickets/ticket/wallet?nolayout=true'"
+  ng-include="'https://daaab.it/tickets/ticket/wallet?nolayout=true'"
   onload="dc.setTabs()"
   >
   Loading wallet...<br />
