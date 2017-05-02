@@ -19,10 +19,19 @@
         "cordova-plugin-globalization": {
             "PACKAGE_NAME": "co.osti.daaab"
         },
+        "cordova-plugin-googleplus": {
+            "PACKAGE_NAME": "co.osti.daaab"
+        },
         "cordova-plugin-inappbrowser": {
             "PACKAGE_NAME": "co.osti.daaab"
         },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "co.osti.daaab"
+        },
         "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "co.osti.daaab"
+        },
+        "cordova-plugin-statusbar": {
             "PACKAGE_NAME": "co.osti.daaab"
         },
         "cordova-plugin-vibration": {
@@ -34,10 +43,16 @@
         "cordova-plugin-x-toast": {
             "PACKAGE_NAME": "co.osti.daaab"
         },
-        "cordova-plugin-network-information": {
+        "de.appplant.cordova.plugin.local-notification": {
             "PACKAGE_NAME": "co.osti.daaab"
         }
     },
     "dependent_plugins": {
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "co.osti.daaab"
+        },
+        "cordova-android-support-v4": {
+            "PACKAGE_NAME": "co.osti.daaab"
+        }
     }
 }
